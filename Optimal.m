@@ -1,5 +1,5 @@
 clc; clear; close all;
-h= 0.01; t(1)=0.1; tfinal=52; t=t(1):h:tfinal; N=ceil((tfinal-t(1))/h); % Inputs
+h= 0.01; t(1)=0; tfinal=300; t=t(1):h:tfinal; N=ceil((tfinal-t(1))/h); % Inputs
 S(1) = 2.67e7;
 V(1) = 9.61e6;
 E(1) = 7;
@@ -8,8 +8,8 @@ H(1) = 0;
 R(1) = 0;
 % Total Population
 total_pop = S(1) + V(1) + E(1) + I(1) + H(1) + R(1);
-alpha=0.97; % this is fractional order
-tau=0.89; % this is fractal dimension
+alpha=0.70; % this is fractional order
+tau=1; % this is fractal dimension
 sigma1 = 0.114;   % Recruitment rate of individuals into the population
 sigma2 = 0.000256; % Natural death rate
 sigma3 = 0.858;   % Average effective contact rate
@@ -23,7 +23,7 @@ sigma10 = 1 / 1.6;% Average latent or incubation rate (days^-1)
 sigma11 = 1 / 50; % Rate at which individuals lose immunity (days^-1)
 % The Model (3.4) in the Research Paper
 f1 = @(t,S,V,E,I,H,R) h^alpha * (sigma1 + sigma11 *(V + R) -sigma3 *(E+I).*S / total_pop - sigma2*S);
-f2 =@(t,S,V,E,I,H,R)  h^alpha * (sigma4 * S-sigma5 * sigma3 * (E+I).*V / total_pop-(sigma11 + sigma2)*V);
+f2 = @(t,S,V,E,I,H,R)  h^alpha * (sigma4 * S-sigma5 * sigma3 * (E+I).*V / total_pop-(sigma11 + sigma2)*V);
 f3 = @(t,S,V,E,I,H,R) h^alpha * (sigma3 * (E+I).*S / total_pop - (sigma10 + sigma2)*E);
 f4 = @(t,S,V,E,I,H,R) h^alpha * (sigma10*E - (sigma8 + sigma2)*I);
 f5 = @(t,S,V,E,I,H,R) h^alpha * (sigma8 * I - (sigma6 + sigma9 + sigma2)*H);
@@ -62,6 +62,5 @@ for n=1:N
         (n-j+1+alpha)).*f2(t(j-1),S(j-1),V(j-1),E(j-1),I(j-1),H(j-1),R(j-1)).*t(j-1).^(tau-1));
     t(n+1)=t(n)+h;
 end
-toc;
 figure (1)
-plot(t, I, 'r-', 'LineWidth', 2);
+plot(t, S, 'r-', 'LineWidth', 3);
